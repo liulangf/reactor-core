@@ -2369,7 +2369,7 @@ public abstract class Mono<T> implements Publisher<T> {
 	 * <p>
 	 *
 	 * @reactor.discard This operator discards the element if it does not match the filter. It
-	 * also discards upon cancellation or error.
+	 * also discards upon cancellation or error triggered by a data signal.
 	 *
 	 * @param tester the predicate to evaluate
 	 *
@@ -2392,7 +2392,7 @@ public abstract class Mono<T> implements Publisher<T> {
 	 * is a {@link Mono}, test will be cancelled after receiving that first value.
 	 *
 	 * @reactor.discard This operator discards the element if it does not match the filter. It
-	 * also discards upon cancellation or error.
+	 * also discards upon cancellation or error triggered by a data signal.
 	 *
 	 * @param asyncPredicate the function generating a {@link Publisher} of {@link Boolean}
 	 * to filter the Mono with
