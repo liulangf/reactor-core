@@ -111,6 +111,7 @@ final class FluxDistinctUntilChanged<T, K> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, ctx));
+				Operators.onDiscard(t, ctx);
 				return true;
 			}
 
@@ -127,6 +128,7 @@ final class FluxDistinctUntilChanged<T, K> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, ctx));
+				Operators.onDiscard(t, ctx);
 				return true;
 			}
 
@@ -240,6 +242,7 @@ final class FluxDistinctUntilChanged<T, K> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, ctx));
+				Operators.onDiscard(t, ctx);
 				return true;
 			}
 
@@ -255,6 +258,7 @@ final class FluxDistinctUntilChanged<T, K> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, ctx));
+				Operators.onDiscard(t, ctx);
 				return true;
 			}
 

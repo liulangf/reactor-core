@@ -147,6 +147,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, this.ctx));
+				Operators.onDiscard(t, this.ctx);
 				return true;
 			}
 
@@ -157,6 +158,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, ctx));
+				Operators.onDiscard(t, this.ctx);
 				return true;
 			}
 
@@ -204,6 +206,9 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 		@Override
 		public void cancel() {
 			s.cancel();
+			if (collection != null) {
+				cleanupCallback.accept(collection);
+			}
 		}
 
 		@Override
@@ -269,6 +274,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, this.ctx));
+				Operators.onDiscard(t, this.ctx);
 				return;
 			}
 
@@ -279,6 +285,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, this.ctx));
+				Operators.onDiscard(t, this.ctx);
 				return;
 			}
 
@@ -306,6 +313,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, this.ctx));
+				Operators.onDiscard(t, this.ctx);
 				return true;
 			}
 
@@ -316,6 +324,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(s, e, t, this.ctx));
+				Operators.onDiscard(t, this.ctx);
 				return true;
 			}
 
@@ -364,6 +373,9 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 		@Override
 		public void cancel() {
 			s.cancel();
+			if (collection != null) {
+				cleanupCallback.accept(collection);
+			}
 		}
 
 		@Override
@@ -426,7 +438,6 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 
 		@Override
 		public boolean tryOnNext(T t) {
-
 			if (sourceMode == Fuseable.ASYNC) {
 				actual.onNext(null);
 				return true;
@@ -444,6 +455,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(qs, e, t, this.ctx));
+				Operators.onDiscard(t, this.ctx);
 				return true;
 			}
 
@@ -454,6 +466,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 			}
 			catch (Throwable e) {
 				onError(Operators.onOperatorError(qs, e, t, this.ctx));
+				Operators.onDiscard(t, this.ctx);
 				return true;
 			}
 
@@ -501,6 +514,9 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 		@Override
 		public void cancel() {
 			qs.cancel();
+			if (collection != null) {
+				cleanupCallback.accept(collection);
+			}
 		}
 
 		@Override
@@ -528,17 +544,23 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 					if (v == null) {
 						return null;
 					}
-					K r = Objects.requireNonNull(keyExtractor.apply(v),
-							"The keyExtractor returned a null collection");
+					try {
+						K r = Objects.requireNonNull(keyExtractor.apply(v),
+								"The keyExtractor returned a null collection");
 
-					if (distinctPredicate.test(collection, r)) {
-						if (dropped != 0) {
-							request(dropped);
+						if (distinctPredicate.test(collection, r)) {
+							if (dropped != 0) {
+								request(dropped);
+							}
+							return v;
 						}
-						return v;
+						Operators.onDiscard(v, ctx);
+						dropped++;
 					}
-					Operators.onDiscard(v, ctx);
-					dropped++;
+					catch (Throwable error) {
+						Operators.onDiscard(v, this.ctx);
+						throw error;
+					}
 				}
 			}
 			else {
@@ -547,6 +569,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 					if (v == null) {
 						return null;
 					}
+					try {
 					K r = Objects.requireNonNull(keyExtractor.apply(v),
 							"The keyExtractor returned a null collection");
 
@@ -555,6 +578,11 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 					}
 					else {
 						Operators.onDiscard(v, ctx);
+					}
+					}
+					catch (Throwable error) {
+						Operators.onDiscard(v, this.ctx);
+						throw error;
 					}
 				}
 			}

@@ -247,7 +247,7 @@ class FluxFilterWhen<T> extends FluxOperator<T, T> {
 						} catch (Throwable ex) {
 							Exceptions.throwIfFatal(ex);
 							Exceptions.addThrowable(ERROR, this, ex);
-							p = null;
+							p = null; //discarded as "old" below
 						}
 
 						if (p != null) {
@@ -259,7 +259,7 @@ class FluxFilterWhen<T> extends FluxOperator<T, T> {
 								} catch (Throwable ex) {
 									Exceptions.throwIfFatal(ex);
 									Exceptions.addThrowable(ERROR, this, ex);
-									u = null;
+									u = null; //triggers discard below
 								}
 
 								if (u != null && u) {
