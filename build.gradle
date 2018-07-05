@@ -180,12 +180,12 @@ configure(subprojects) { p ->
 	include '**/*Spec.*'
   }
 
-  //all test tasks will show FAILED/PASSED for each test method,
+  //all test tasks will show FAILED for each test method,
   // common exclusions, no scanning
   p.tasks.withType(Test).all {
 	testLogging {
 	  //FIXME return to FAILED only
-	  events "PASSED", "FAILED"
+	  events "STARTED", "FAILED"
 	  showExceptions true
 	  exceptionFormat "FULL"
 	  stackTraceFilters "ENTRY_POINT"
